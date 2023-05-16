@@ -1,0 +1,6 @@
+server:
+  post: 3000
+
+db:
+  type: 'postgres'
+  database: 'board-app'
