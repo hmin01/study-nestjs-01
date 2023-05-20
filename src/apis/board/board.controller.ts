@@ -1,6 +1,6 @@
 import { Body, Controller, Param, UsePipes } from '@nestjs/common';
 // DTO
-import { CreateBoardDto } from './dto/create';
+import { CreateBoardDto } from './board.dto';
 // Entity
 import { Board } from './board.entity';
 // HTTP Method

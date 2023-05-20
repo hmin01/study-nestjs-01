@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 // DTO
-import { CreateBoardDto } from './dto/create';
+import { CreateBoardDto } from './board.dto';
 // Entity
 import { Board } from './board.entity';
 // Exception
@@ -35,7 +35,7 @@ export class BoardService {
     // 삭제
     const result = await Board.delete({ id });
     // 예외 처리
-    if (result.affected === 0) throw new NotFoundException(`Can't find board with id (${id})`);
+    if (result.affected === 0) this.notFoundException(id);
     // 결과 반환
     return 'Deleted';
   }
@@ -45,7 +45,11 @@ export class BoardService {
    * @returns 조회 결과
    */
   async findAll(): Promise<Board[]> {
-    return await Board.find();
+    try {
+      return await Board.find();
+    } catch (err: unknown) {
+      this.notFoundException();
+    }
   }
 
   /**
@@ -57,7 +61,7 @@ export class BoardService {
     // 조회
     const board: Board =  await Board.findOneBy({ id });
     // 예외 처리
-    if (!board) throw new NotFoundException(`Can't find board with id (${id})`);
+    if (!board) this.notFoundException(id);
     // 결과 반환
     return board;
   }
@@ -71,8 +75,17 @@ export class BoardService {
     // 상태 변경
     const result = await Board.update(id, { status });
     // 예외 처리
-    if (result.affected === 0) throw new NotFoundException(`Can't find board with id (${id})`);
+    if (result.affected === 0) this.notFoundException(id);
     // 결과 반환
     return 'Updated';
+  }
+
+  /**
+   * [Private Method] NotFoundException
+   * @param id 게시물 ID
+   * @returns 예외 반환
+   */
+  private notFoundException(id?: number): void {
+    throw new NotFoundException(id ? `Can't find board with id (input: ${id})` : `Can't find boards`);
   }
 }
